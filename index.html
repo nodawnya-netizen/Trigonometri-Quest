@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>CodePen - A Pen by Riska Tri Wulandari</title>
+    
+
+  </head>
+    
+  <body>
+  <!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Tembak Sudut — Trigonometria Quest (Embed v4)</title>
+  <style>
+    :root{
+      --bg:#ffffff; --surface:#f6f9fb; --card:#ffffff; --text:#0f172a; --muted:#475569;
+      --tosca:#06b6b4; --kunyit:#facc15; --orange:#fb923c; --sky:#60a5fa;
+      --accent:linear-gradient(90deg,var(--tosca),#2dd4bf);
+      --good:#16a34a; --bad:#ef4444;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;-webkit-font-smoothing:antialiased}
+    body{background:var(--surface);color:var(--text);display:flex;flex-direction:column;align-items:center;padding:0 0 32px}
+    /* header (embed-friendly) */
+    .main-header{
+      width:100%;max-width:1100px;display:flex;align-items:center;gap:14px;
+      background:#fff;border-bottom:3px solid rgba(6,182,180,0.18);
+      padding:12px 18px;border-radius:12px 12px 0 0;position:relative;z-index:60;margin-top:16px;
+      box-shadow:0 6px 28px rgba(6,182,180,0.08);
+    }
+    .logo{width:60px;height:60px;border-radius:12px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;color:#04202a;font-size:22px}
+    .game-title{margin:0;font-size:20px;font-weight:800;color:#04202a}
+    .lead{margin:4px 0 0;color:#0f766e;font-size:13px}
+    /* app container */
+    .app{width:100%;max-width:1100px;background:var(--card);border-radius:0 0 12px 12px;padding:18px;box-shadow:0 12px 30px rgba(15,23,42,0.06)}
+    .layout{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:#fff;padding:16px;border-radius:10px;position:relative;overflow:visible}
+    .play-area{min-height:560px;display:flex;flex-direction:column;align-items:center;gap:12px}
+    .hud{display:flex;gap:10px;align-items:center;width:100%;justify-content:space-between}
+    .stat{background:#f1f5f9;padding:8px 12px;border-radius:10px;font-size:13px;color:var(--text)}
+    /* circle area */
+    .circle-wrap{position:relative;width:420px;height:420px}
+    .unit-circle{width:100%;height:100%;border-radius:50%;
+      background:radial-gradient(circle at 25% 20%, rgba(6,182,180,0.03), transparent 30%),#fff;
+      border:4px solid rgba(6,182,180,0.08);display:flex;align-items:center;justify-content:center;position:relative;overflow:visible}
+    .quad{position:absolute;width:50%;height:50%;opacity:0.22;pointer-events:none}
+    .q1{right:0;top:0;background:rgba(6,182,180,0.22)}
+    .q2{left:0;top:0;background:rgba(250,204,21,0.22)}
+    .q3{left:0;bottom:0;background:rgba(251,146,60,0.22)}
+    .q4{right:0;bottom:0;background:rgba(96,165,250,0.22)}
+    .axis{position:absolute;background:rgba(15,23,42,0.08);z-index:8;pointer-events:none}
+    .axis.x{width:100%;height:2px;left:0;top:50%;transform:translateY(-50%)}
+    .axis.y{height:100%;width:2px;top:0;left:50%;transform:translateX(-50%)}
+    .angle-line{position:absolute;left:50%;top:50%;width:50%;height:6px;background:var(--tosca);border-radius:6px;transform-origin:0% 50%;transition:transform .45s cubic-bezier(.2,.9,.25,1);box-shadow:0 8px 30px rgba(6,182,180,0.12);z-index:12}
+    .point{position:absolute;width:18px;height:18px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 8px 20px rgba(6,22,34,0.06);border:3px solid #fff;z-index:13}
+    .angle-label{position:absolute;padding:6px 8px;border-radius:8px;background:#04202a;color:#e6fff9;font-size:13px;transform:translate(-50%,-50%);z-index:14;white-space:nowrap}
+    /* question & answers */
+    .question{font-size:20px;font-weight:800;color:var(--text);margin-top:8px;text-align:center}
+    .answers{display:flex;gap:14px;margin-top:8px;justify-content:center;flex-wrap:wrap;max-width:820px}
+    .btn{padding:12px 18px;border-radius:12px;background:linear-gradient(180deg,#f8fafc,#f1f5f9);border:1px solid rgba(2,6,23,0.04);cursor:pointer;min-width:120px;text-align:center;color:var(--text);box-shadow:0 6px 18px rgba(2,6,23,0.04);font-weight:700}
+    .btn.primary{background:var(--accent);color:#04202a;border:none}
+    .btn.ghost{background:transparent;border:1px solid rgba(15,23,42,0.06)}
+    .btn.correct{background:var(--good);color:white}
+    .btn.wrong{background:var(--bad);color:white}
+    .side{display:flex;flex-direction:column;gap:12px}
+    .panel{background:#fff;border-radius:10px;padding:12px;border:1px solid rgba(2,6,23,0.04)}
+    .hintBox{position:fixed;left:50%;top:14%;transform:translateX(-50%);background:#04202a;color:#e6fff9;border-radius:10px;padding:14px 18px;font-size:14px;box-shadow:0 10px 30px rgba(6,22,34,0.12);z-index:120}
+    .celebrate{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.95);z-index:160}
+    .confetti{position:fixed;pointer-events:none;z-index:150}
+    @keyframes confettiFall{0%{transform:translateY(-10vh) rotate(0)}100%{transform:translateY(110vh) rotate(720deg)}}
+    @media (max-width:1000px){.layout{grid-template-columns:1fr};.circle-wrap{width:340px;height:340px}}
+  </style>
+</head>
+<body>
+
+  <!-- HEADER ALWAYS VISIBLE (embed-friendly) -->
+  <header class="main-header" role="banner">
+    <div class="logo">TQ</div>
+    <div>
+      <h1 class="game-title">Tembak Sudut — Trigonometria Quest</h1>
+      <p class="lead">Game Interaktif Kelas XI | Latihan Sin, Cos, Tan pada Unit Circle</p>
+    </div>
+  </header>
+
+  <!-- APP -->
+  <div class="app" role="main" aria-labelledby="game-title">
+    <div class="layout">
+      <main class="card">
+        <div class="play-area" id="playArea">
+          <div class="hud">
+            <div class="stat">Level: <span id="level">1</span></div>
+            <div class="stat">Skor: <strong id="score">0</strong></div>
+            <div class="stat">Sisa Soal: <span id="remaining">10</span></div>
+          </div>
+
+          <div class="circle-wrap" aria-hidden="true">
+            <div class="unit-circle" id="unitCircle">
+              <!-- quadrant overlays -->
+              <div class="quad q1"></div>
+              <div class="quad q2"></div>
+              <div class="quad q3"></div>
+              <div class="quad q4"></div>
+              <!-- axes -->
+              <div class="axis x"></div>
+              <div class="axis y"></div>
+              <!-- visuals -->
+              <div class="angle-line" id="angleLine"></div>
+              <div class="point" id="point"></div>
+              <div class="angle-label" id="angleLabel">0°</div>
+            </div>
+          </div>
+
+          <div style="text-align:center;width:100%">
+            <div class="question" id="questionText">Tekan Mulai untuk memulai permainan</div>
+            <div class="answers" id="answers" aria-live="polite"></div>
+          </div>
+
+          <div style="display:flex;gap:12px;margin-top:12px">
+            <button class="btn primary" id="startBtn">Mulai</button>
+            <button class="btn ghost" id="hintBtn">Petunjuk</button>
+            <button class="btn ghost" id="skipBtn">Lewati</button>
+          </div>
+        </div>
+      </main>
+
+      <aside class="side" aria-label="Kontrol dan Statistik">
+        <div class="panel">
+          <strong>Instruksi Singkat</strong>
+          <div style="font-size:14px;color:var(--muted)">Pilih jawaban benar secepat mungkin. Gunakan unit circle & kuadran sebagai panduan.</div>
+        </div>
+
+        <div class="panel">
+          <strong>Statistik</strong>
+          <div style="margin-top:8px;color:var(--muted);font-size:13px">
+            <div>Benar: <span id="correctCount">0</span></div>
+            <div>Salah: <span id="wrongCount">0</span></div>
+            <div>Total Poin: <span id="accum">0</span></div>
+          </div>
+        </div>
+
+        <!-- SETTING SOAL: VISIBLE DI SINI -->
+        <div class="panel">
+          <strong>Setting Soal</strong>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:8px">
+            <label>Jumlah Soal:
+              <select id="qCount">
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+              </select>
+            </label>
+
+            <label>Jenis Fungsi:
+              <select id="typeSelect">
+                <option value="sin">sin</option>
+                <option value="cos">cos</option>
+                <option value="tan">tan</option>
+                <option value="mix">campur</option>
+              </select>
+            </label>
+
+            <button class="btn primary" id="applySettings">Terapkan</button>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+  </div>
+
+  <div id="hintRoot" aria-hidden="true"></div>
+
+  <script>
+    (function(){
+      // Angles & values
+      const ANGLES=[0,30,45,60,90,120,135,150,180,210,225,240,270,300,315,330];
+      const VALS={
+        0:{sin:'0',cos:'1',tan:'0'},30:{sin:'1/2',cos:'√3/2',tan:'1/√3'},45:{sin:'√2/2',cos:'√2/2',tan:'1'},
+        60:{sin:'√3/2',cos:'1/2',tan:'√3'},90:{sin:'1',cos:'0',tan:'—'},120:{sin:'√3/2',cos:'-1/2',tan:'-√3'},
+        135:{sin:'√2/2',cos:'-√2/2',tan:'-1'},150:{sin:'1/2',cos:'-√3/2',tan:'-1/√3'},180:{sin:'0',cos:'-1',tan:'0'},
+        210:{sin:'-1/2',cos:'-√3/2',tan:'1/√3'},225:{sin:'-√2/2',cos:'-√2/2',tan:'1'},240:{sin:'-√3/2',cos:'-1/2',tan:'√3'},
+        270:{sin:'-1',cos:'0',tan:'—'},300:{sin:'-√3/2',cos:'1/2',tan:'-√3'},315:{sin:'-√2/2',cos:'√2/2',tan:'-1'},330:{sin:'-1/2',cos:'√3/2',tan:'-1/√3'}
+      };
+
+      // DOM nodes
+      const startBtn = document.getElementById('startBtn');
+      const hintBtn = document.getElementById('hintBtn');
+      const skipBtn = document.getElementById('skipBtn');
+      const questionText = document.getElementById('questionText');
+      const answers = document.getElementById('answers');
+      const angleLine = document.getElementById('angleLine');
+      const point = document.getElementById('point');
+      const angleLabel = document.getElementById('angleLabel');
+      const scoreEl = document.getElementById('score');
+      const remainingEl = document.getElementById('remaining');
+      const correctCount = document.getElementById('correctCount');
+      const wrongCount = document.getElementById('wrongCount');
+      const accum = document.getElementById('accum');
+      const qCountSelect = document.getElementById('qCount');
+      const typeSelect = document.getElementById('typeSelect');
+      const applySettings = document.getElementById('applySettings');
+
+      const quads = {
+        1: document.querySelector('.q1'),
+        2: document.querySelector('.q2'),
+        3: document.querySelector('.q3'),
+        4: document.querySelector('.q4')
+      };
+
+      // state
+      let totalQuestions = parseInt(qCountSelect.value);
+      let questionType = typeSelect.value; // sin / cos / tan / mix
+      let questionPool = [];
+      let currentQuestion = null;
+      let score=0, correct=0, wrong=0, accumScore=0;
+      let inGame=false;
+
+      function degToRad(d){return d*Math.PI/180;}
+      function randomFrom(arr){return arr[Math.floor(Math.random()*arr.length)];}
+      function getQuadrant(angle){
+        const a = ((angle%360)+360)%360;
+        if(a>0 && a<90) return 1;
+        if(a>90 && a<180) return 2;
+        if(a>180 && a<270) return 3;
+        if(a>270 && a<360) return 4;
+        return 0; // axis
+      }
+
+      function highlightQuadrant(q){
+        [1,2,3,4].forEach(n=>{ quads[n].style.opacity = (n===q ? '0.4' : '0.22'); });
+      }
+
+      function placeAngle(theta){
+        const wrap = document.querySelector('.circle-wrap');
+        const rect = wrap.getBoundingClientRect();
+        const cx = rect.width/2, cy = rect.height/2, r = rect.width/2 - 34;
+
+        // rotate line so 90deg points up: use -theta
+        angleLine.style.transform = `rotate(${-theta}deg)`;
+
+        // endpoint (DOM coords: y increases downward)
+        const rad = degToRad(theta);
+        const x = cx + r * Math.cos(rad);
+        const y = cy - r * Math.sin(rad);
+        point.style.left = x + 'px';
+        point.style.top = y + 'px';
+
+        // label placed slightly beyond tip
+        const labelOffset = 28;
+        const lx = cx + (r + labelOffset) * Math.cos(rad);
+        const ly = cy - (r + labelOffset) * Math.sin(rad);
+        angleLabel.style.left = lx + 'px';
+        angleLabel.style.top = ly + 'px';
+        angleLabel.textContent = `${theta}°`;
+
+        // quadrant color + highlight
+        const q = getQuadrant(theta);
+        const colors = {1:'var(--tosca)',2:'var(--kunyit)',3:'var(--orange)',4:'var(--sky)'};
+        if(q>0) point.style.background = colors[q];
+        else point.style.background = 'linear-gradient(135deg,#fff,var(--tosca))';
+        highlightQuadrant(q);
+      }
+
+      function generatePool(){
+        const pool=[];
+        for(let i=0;i<totalQuestions;i++){
+          const angle = randomFrom(ANGLES);
+          let fn = questionType;
+          if(questionType==='mix') fn = randomFrom(['sin','cos','tan']);
+          pool.push({angle,fn});
+        }
+        return pool;
+      }
+
+      function getCorrectStr(angle, fn){ return VALS[angle][fn] || '—'; }
+
+      function makeChoices(angle, fn){
+        const correct = getCorrectStr(angle,fn);
+        const s = new Set([correct]);
+        while(s.size<3){
+          const a = randomFrom(ANGLES);
+          const v = VALS[a][fn];
+          if(v) s.add(v);
+        }
+        return shuffle(Array.from(s));
+      }
+
+      function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]] } return arr; }
+
+      function showQuestion(){
+        if(questionPool.length===0){ endGame(); return; }
+        currentQuestion = questionPool.shift();
+        placeAngle(currentQuestion.angle);
+        questionText.textContent = `${currentQuestion.fn.toUpperCase()} ${currentQuestion.angle}° = ?`;
+        const choices = makeChoices(currentQuestion.angle, currentQuestion.fn);
+        answers.innerHTML = '';
+        choices.forEach(ch=>{
+          const b = document.createElement('button');
+          b.className = 'btn';
+          b.textContent = ch;
+          b.dataset.val = ch;
+          b.addEventListener('click', ()=> answerSelected(b));
+          answers.appendChild(b);
+        });
+        remainingEl.textContent = questionPool.length + 1;
+      }
+
+      function answerSelected(btn){
+        if(!inGame) return;
+        const selected = btn.dataset.val;
+        const correctStr = getCorrectStr(currentQuestion.angle, currentQuestion.fn);
+        Array.from(answers.children).forEach(x=>x.disabled=true);
+
+        if(selected === correctStr){
+          btn.classList.add('correct');
+          score += 100; accumScore += 100; correct++;
+        } else {
+          btn.classList.add('wrong');
+          Array.from(answers.children).forEach(x=>{ if(x.dataset.val === correctStr) x.classList.add('correct'); });
+          score = Math.max(0, score-25); wrong++;
+          showHint(`Jawaban benar: <strong>${correctStr}</strong><br>Ingat sudut istimewa & tanda kuadran.`);
+        }
+
+        scoreEl.textContent = score;
+        correctCount.textContent = correct;
+        wrongCount.textContent = wrong;
+        accum.textContent = accumScore;
+
+        setTimeout(()=>{ Array.from(answers.children).forEach(x=>x.disabled=false); showQuestion(); }, 900);
+      }
+
+      function startGame(){
+        totalQuestions = parseInt(qCountSelect.value);
+        questionType = typeSelect.value;
+        questionPool = generatePool();
+        score = 0; correct = 0; wrong = 0; accumScore = 0; inGame = true;
+        scoreEl.textContent = 0; correctCount.textContent = 0; wrongCount.textContent = 0; accum.textContent = 0;
+        showQuestion();
+      }
+
+      function endGame(){
+        inGame = false;
+        questionText.textContent = 'Permainan selesai!';
+        answers.innerHTML = '';
+        launchConfetti(); playCheer(); showCelebration();
+      }
+
+      // hint box
+      function showHint(html){
+        const root = document.getElementById('hintRoot');
+        const box = document.createElement('div');
+        box.className = 'hintBox';
+        box.innerHTML = html;
+        root.appendChild(box);
+        setTimeout(()=>box.remove(), 4800);
+      }
+
+      // confetti
+      function launchConfetti(){
+        const colors = ['#06b6b4','#2dd4bf','#facc15','#fb923c','#ef4444','#7c3aed'];
+        for(let i=0;i<160;i++){
+          const el = document.createElement('div');
+          el.className = 'confetti';
+          const size = 6 + Math.random()*12;
+          el.style.width = size + 'px';
+          el.style.height = (size*0.6) + 'px';
+          el.style.left = (Math.random()*100) + 'vw';
+          el.style.top = '-' + (Math.random()*20) + 'vh';
+          el.style.background = colors[Math.floor(Math.random()*colors.length)];
+          el.style.opacity = 0.95;
+          el.style.transform = 'rotate(' + (Math.random()*360) + 'deg)';
+          el.style.borderRadius = '2px';
+          el.style.animation = `confettiFall ${2 + Math.random()*3}s cubic-bezier(.2,.7,.2,1) ${Math.random()*0.8}s forwards`;
+          document.body.appendChild(el);
+          setTimeout(()=>el.remove(), 7000);
+        }
+      }
+
+      // audio cheer
+      let cheerAudio = null;
+      function playCheer(){
+        try{
+          if(!cheerAudio){
+            cheerAudio = new Audio('https://cdn.pixabay.com/download/audio/2021/08/04/audio_8d5a8f8f45.mp3?filename=short-cheer-2-8261.mp3');
+            cheerAudio.volume = 0.75;
+          }
+          cheerAudio.currentTime = 0; cheerAudio.play();
+        }catch(e){ console.warn('Audio cheer gagal', e); }
+      }
+
+      function showCelebration(){
+        const card = document.querySelector('.card');
+        const el = document.createElement('div');
+        el.className = 'celebrate';
+        el.innerHTML = `<div style="text-align:center"><h2>🎉 Selamat! Kamu TrigonoMaster! 🎉</h2><div style="margin-top:12px"><button id="playAgain" class="btn primary">Main Lagi</button></div></div>`;
+        card.appendChild(el);
+        document.getElementById('playAgain').addEventListener('click', ()=>{ el.remove(); startGame(); });
+        setTimeout(()=>{ if(el && el.parentNode) el.remove(); }, 7000);
+      }
+
+      // controls
+      startBtn.addEventListener('click', ()=> startGame());
+      hintBtn.addEventListener('click', ()=> showHint('<strong>💡 Petunjuk:</strong><br>Gunakan unit circle: perhatikan kuadran untuk menentukan tanda sin/cos.'));
+      skipBtn.addEventListener('click', ()=>{ if(!inGame) return; score = Math.max(0, score-10); wrong++; wrongCount.textContent = wrong; showQuestion(); });
+      applySettings.addEventListener('click', ()=>{ totalQuestions = parseInt(qCountSelect.value); questionType = typeSelect.value; showHint('Pengaturan diterapkan. Tekan Mulai untuk memulai.'); });
+
+      // keyboard 1-3 quick keys
+      document.addEventListener('keydown', (e)=>{ if(!inGame) return; if(['1','2','3'].includes(e.key)){ const idx = parseInt(e.key)-1; const btn = answers.children[idx]; if(btn) btn.click(); } });
+
+      // initial visual
+      placeAngle(0);
+      // expose for debug
+      window.TQ = { start: startGame, state: ()=>({score,correct,wrong}) };
+
+    })();
+  </script>
+</body>
+</html>
+    
+  </body>
+  
+</html>
